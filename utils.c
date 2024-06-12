@@ -1,4 +1,9 @@
-#include <philosopher.h>
+#include "philosopher.h"
+
+static void	ft_putchar_fd(char c, int fd)
+{
+	write(fd, &c, 1);
+}
 
 void	ft_putnbr_fd(int n, int fd)
 {
@@ -21,8 +26,14 @@ void	ft_putnbr_fd(int n, int fd)
 
 void	ft_putstr_fd(char *s, int fd)
 {
-	if (s)
-		write(fd, s, ft_strlen(s));
+	int i;
+
+	i = 0;
+	while(s[i])
+	{
+		write(fd, &s[i], 1);
+		i++;
+	}
 }
 
 int	ft_isdigit(int c)
