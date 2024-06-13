@@ -13,8 +13,27 @@ int get_time(void)
 	return (time.tv_sec * 1000 + time.tv_usec / 1000);
 }
 
+int check_finish(t_philo *philo, int status)
+{
+	pthread_mutex_lock(&philo->resource->mutex_cmp_finish);
+	if (status)
+	{
+		philo->resource->finish = 1;
+		pthread_mutex_unlock(&philo->resource->mutex_cmp_finish);
+	}
+	if (philo->resource->finish)
+	{
+		pthread_mutex_unlock(&philo->resource->mutex_cmp_finish);
+		return (1);
+	}
+	pthread_mutex_unlock(&philo->resource->mutex_cmp_finish);
+	return 0;
+}
+
 void print_status(t_philo *philo, char *str)
 {
+	if(check_finish(philo, 0))
+		return ;
 	pthread_mutex_lock(&philo->resource->mutex_print);
 	ft_putnbr_fd(get_time()-philo->resource->time_stamp ,1);
 	ft_putstr_fd(" ", 1);
@@ -45,6 +64,7 @@ int init_resource(char **argv, int argc, t_resource *resource)
 	}
 	return (0);
 }
+
 
 int alloc_resource(t_resource *resource)
 {
@@ -119,33 +139,48 @@ int preprocessing(int argc, char **argv, t_resource *resource)
 	return (0);
 }
 
+int check_dead(t_philo *philo)
+{
+	pthread_mutex_lock(&philo->resource->mutex_eat);
+	if(get_time() - philo->time_last_eat >= philo->resource->time_die)
+	{
+		print_status(philo, DIE);
+		check_finish(philo, 1);
+		pthread_mutex_unlock(&philo->resource->mutex_eat);
+		return (1);
+	}
+	else if(philo->resource->cnt_must_eat != -1 && philo->cnt_eat >= philo->resource->cnt_must_eat)
+	{
+		philo->resource->cmp_finish_eat++;
+		if(philo->resource->cmp_finish_eat >= philo->resource->num_philos)
+		{
+			check_finish(philo, 1);
+			pthread_mutex_unlock(&philo->resource->mutex_eat);
+			return (1);
+		}
+	}
+	pthread_mutex_unlock(&philo->resource->mutex_eat);
+	return (0);
+}
+
 void *routine(void *args)
 {
 	t_philo *philo;
 
 	philo = (t_philo *)args;
-	print_status(philo, THINK);
 	if(philo->id % 2 == 0)
 	{
 		usleep(philo->resource->time_eat * 1000);
 	}
 	while(1)
 	{
-		pthread_mutex_lock(&philo->resource->forks[philo->l_fork]);
-		print_status(philo, FORK);
-		pthread_mutex_lock(&philo->resource->forks[philo->r_fork]);
-		print_status(philo, FORK);
-		print_status(philo, EAT);
-		usleep(philo->resource->time_eat * 1000);
-		pthread_mutex_lock(&philo->resource->mutex_eat);
-		philo->cnt_eat++;
-		philo->time_last_eat = get_time();
-		pthread_mutex_lock(&philo->resource->mutex_eat);
-		pthread_mutex_unlock(&philo->resource->forks[philo->l_fork]);
-		pthread_mutex_unlock(&philo->resource->forks[philo->r_fork]);
-		print_status(philo, SLEEP);
-		usleep(philo->resource->time_sleep * 1000);
-		print_status(philo, THINK);
+		if(check_finish(philo, 0))
+			return (0);
+		ft_take_forks(philo);
+		ft_eat(philo);
+		ft_drop_forks(philo);
+		ft_sleep(philo);
+		ft_think(philo);
 	}
 }
 
@@ -198,7 +233,53 @@ int validate_input(char **argv)
 	return (0);
 }
 
-//void checker (t_resource *resource);
+int free_resource(t_resource *resource)
+{
+	int i;
+
+	i = 0;
+	while(i < resource->num_philos)
+	{
+		pthread_mutex_destroy(&resource->forks[i]);
+		i++;
+	}
+	pthread_mutex_destroy(&resource->mutex_print);
+	pthread_mutex_destroy(&resource->mutex_eat);
+	pthread_mutex_destroy(&resource->mutex_cmp_finish);
+	free(resource->philos);
+	free(resource->forks);
+	return (0);
+}
+
+int checker(t_resource *resource)
+{
+	int i;
+	int status;
+
+	status = 1;
+	while(status)
+	{
+		i = 0;
+		resource->cmp_finish_eat = 0;
+		while(i < resource->num_philos)
+		{
+			if(check_dead(&resource->philos[i]))
+			{
+				status = 0;
+			}
+			i++;
+		}
+		usleep(10);
+	}
+	i = 0;
+	while (i < resource->num_philos)
+	{
+		pthread_join(resource->philos[i].thread, NULL);
+		i++;
+	}
+	return free_resource(resource);
+}
+
 
 int main(int argc, char **argv)
 {
@@ -218,15 +299,11 @@ int main(int argc, char **argv)
 		{
 			return (1);
 		}
-		int i = 0;
-		while(i < resource.num_philos)
-		{
-			pthread_join(resource.philos[i].thread, NULL);
-			i++;
-		}
-		//checker(&resource);
+		checker(&resource);
 	}
 	else
+	{
 		print_error(INPUT_ERR_3);
+	}
 	return (0);
 }
