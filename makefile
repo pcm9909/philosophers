@@ -1,3 +1,2 @@
 all :
-	make re -C ./utils/libft
-	cc main.c utils.c -pthread -g
+	cc *.c -pthread -g -fsanitize=thread
