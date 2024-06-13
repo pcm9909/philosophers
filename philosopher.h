@@ -45,6 +45,7 @@ typedef struct s_resource
 	int cnt_must_eat;
 	int time_stamp;
 	int cmp_finish_eat;
+	int finish;
 	t_philo *philos;
 	pthread_mutex_t *forks;
 	pthread_mutex_t mutex_print;
@@ -52,9 +53,20 @@ typedef struct s_resource
 	pthread_mutex_t mutex_cmp_finish;
 } t_resource;
 
+
+//utils.c
 void	ft_putstr_fd(char *s, int fd);
 void	ft_putnbr_fd(int n, int fd);
 int		ft_isdigit(int c);
 int		ft_atoi(const char *str);
 
+//philo_func.c
+void	ft_take_forks(t_philo *philo);
+void	ft_drop_forks(t_philo *philo);
+void	ft_eat(t_philo *philo);
+void	ft_sleep(t_philo *philo);
+void	ft_think(t_philo *philo);
+
+int get_time(void);
+void print_status(t_philo *philo, char *str);
 #endif
