@@ -43,11 +43,6 @@ int	ft_isdigit(int c)
 	return (0);
 }
 
-static int	ft_isspace(int c)
-{
-	return (c == ' ' || (c >= '\t' && c <= '\r'));
-}
-
 int	ft_atoi(const char *str)
 {
 	int	i;
@@ -57,7 +52,7 @@ int	ft_atoi(const char *str)
 	i = 0;
 	sign = 1;
 	result = 0;
-	while (ft_isspace ((unsigned char)str[i]))
+	while ((str[i] == ' ' || (str[i] >= '\t' && str[i] <= '\r')))
 		i++;
 	if (str[i] == '-' || str[i] == '+')
 	{
