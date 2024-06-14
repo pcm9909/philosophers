@@ -1,40 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   free.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: chunpark <chunpark@student.42gyeongsan.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/06/14 16:14:56 by chunpark          #+#    #+#             */
-/*   Updated: 2024/06/14 16:34:22 by chunpark         ###   ########.fr       */
+/*   Created: 2024/06/14 16:14:47 by chunpark          #+#    #+#             */
+/*   Updated: 2024/06/14 16:33:17 by chunpark         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosopher.h"
 
-int	main(int argc, char **argv)
+int	free_resource(t_resource *resource)
 {
-	t_resource	resource;
+	int	i;
 
-	if (argc == 5 || argc == 6)
+	i = 0;
+	while (i < resource->num_philos)
 	{
-		if (validate_input(argv))
-		{
-			return (1);
-		}
-		if (preprocessing(argc, argv, &resource))
-		{
-			return (1);
-		}
-		if (create_and_run_philos(&resource))
-		{
-			return (1);
-		}
-		checker(&resource);
+		pthread_mutex_destroy(&resource->forks[i]);
+		i++;
 	}
-	else
-	{
-		print_error(INPUT_ERR_3);
-	}
+	pthread_mutex_destroy(&resource->mutex_print);
+	pthread_mutex_destroy(&resource->mutex_eat);
+	pthread_mutex_destroy(&resource->mutex_cmp_finish);
+	free(resource->philos);
+	free(resource->forks);
 	return (0);
 }

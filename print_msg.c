@@ -1,40 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   print_msg.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: chunpark <chunpark@student.42gyeongsan.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/06/14 16:14:56 by chunpark          #+#    #+#             */
-/*   Updated: 2024/06/14 16:34:22 by chunpark         ###   ########.fr       */
+/*   Created: 2024/06/14 16:15:18 by chunpark          #+#    #+#             */
+/*   Updated: 2024/06/14 16:39:00 by chunpark         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosopher.h"
 
-int	main(int argc, char **argv)
+void	print_status(t_philo *philo, char *str)
 {
-	t_resource	resource;
+	if (check_finish(philo, 0))
+		return ;
+	pthread_mutex_lock(&philo->resource->mutex_print);
+	ft_putnbr_fd(get_time() - philo->resource->time_stamp, 1);
+	ft_putstr_fd(" ", 1);
+	ft_putnbr_fd(philo->id, 1);
+	ft_putstr_fd(" ", 1);
+	ft_putstr_fd(str, 1);
+	pthread_mutex_unlock(&philo->resource->mutex_print);
+}
 
-	if (argc == 5 || argc == 6)
-	{
-		if (validate_input(argv))
-		{
-			return (1);
-		}
-		if (preprocessing(argc, argv, &resource))
-		{
-			return (1);
-		}
-		if (create_and_run_philos(&resource))
-		{
-			return (1);
-		}
-		checker(&resource);
-	}
-	else
-	{
-		print_error(INPUT_ERR_3);
-	}
-	return (0);
+int	print_error(char *str)
+{
+	ft_putstr_fd(str, 1);
+	return (1);
 }

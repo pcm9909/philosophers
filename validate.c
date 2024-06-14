@@ -1,40 +1,39 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   validate.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: chunpark <chunpark@student.42gyeongsan.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/06/14 16:14:56 by chunpark          #+#    #+#             */
-/*   Updated: 2024/06/14 16:34:22 by chunpark         ###   ########.fr       */
+/*   Created: 2024/06/14 16:14:30 by chunpark          #+#    #+#             */
+/*   Updated: 2024/06/14 16:42:22 by chunpark         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosopher.h"
 
-int	main(int argc, char **argv)
+int	validate_input(char **argv)
 {
-	t_resource	resource;
+	int	i;
+	int	j;
 
-	if (argc == 5 || argc == 6)
+	i = 1;
+	while (argv[i])
 	{
-		if (validate_input(argv))
+		if (ft_atoi(argv[i]) <= 0)
 		{
-			return (1);
+			return (print_error(INPUT_ERR_1));
 		}
-		if (preprocessing(argc, argv, &resource))
+		j = 0;
+		while (argv[i][j])
 		{
-			return (1);
+			if (ft_isdigit(argv[i][j]) == 0)
+			{
+				return (print_error(INPUT_ERR_2));
+			}
+			j++;
 		}
-		if (create_and_run_philos(&resource))
-		{
-			return (1);
-		}
-		checker(&resource);
-	}
-	else
-	{
-		print_error(INPUT_ERR_3);
+		i++;
 	}
 	return (0);
 }
