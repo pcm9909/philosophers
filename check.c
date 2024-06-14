@@ -6,7 +6,7 @@
 /*   By: chunpark <chunpark@student.42gyeongsan.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/14 16:14:38 by chunpark          #+#    #+#             */
-/*   Updated: 2024/06/14 20:17:10 by chunpark         ###   ########.fr       */
+/*   Updated: 2024/06/14 20:55:26 by chunpark         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,22 +61,19 @@ int	checker(t_resource *resource)
 	status = 1;
 	while (status)
 	{
-		i = 0;
+		i = -1;
 		resource->cmp_finish_eat = 0;
-		while (i < resource->num_philos)
+		while (++i < resource->num_philos)
 		{
 			if (check_dead(&resource->philos[i]))
 			{
 				status = 0;
 			}
-			i++;
 		}
 	}
 	i = -1;
-	while (i++ < resource->num_philos)
+	while (++i < resource->num_philos)
 	{
-		if (resource->num_philos == 1)
-			break ;
 		pthread_join(resource->philos[i].thread, NULL);
 	}
 	return (free_resource(resource));
