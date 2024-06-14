@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   philosopher.h                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: chunpark <chunpark@student.42gyeongsan.    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/14 16:15:08 by chunpark          #+#    #+#             */
+/*   Updated: 2024/06/14 16:36:36 by chunpark         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef PHILOSOPHER_H
 # define PHILOSOPHER_H
 
@@ -23,36 +35,35 @@
 # define DIE "died\n"
 # define FORK "has taken a fork\n"
 
-struct s_resource;
+struct	s_resource;
 
 typedef struct s_philo
 {
-	int id;
-	int cnt_eat;
-	int time_last_eat;
-	int l_fork;
-	int r_fork;
-	pthread_t thread;
-	struct s_resource *resource;
-} t_philo;
+	int					id;
+	int					cnt_eat;
+	int					time_last_eat;
+	int					l_fork;
+	int					r_fork;
+	pthread_t			thread;
+	struct s_resource	*resource;
+}			t_philo;
 
 typedef struct s_resource
 {
-	int num_philos;
-	int time_eat;
-	int time_sleep;
-	int time_die;
-	int cnt_must_eat;
-	int time_stamp;
-	int cmp_finish_eat;
-	int finish;
-	t_philo *philos;
-	pthread_mutex_t *forks;
-	pthread_mutex_t mutex_print;
-	pthread_mutex_t mutex_eat;
-	pthread_mutex_t mutex_cmp_finish;
-} t_resource;
-
+	int				num_philos;
+	int				time_eat;
+	int				time_sleep;
+	int				time_die;
+	int				cnt_must_eat;
+	int				time_stamp;
+	int				cmp_finish_eat;
+	int				finish;
+	t_philo			*philos;
+	pthread_mutex_t	*forks;
+	pthread_mutex_t	mutex_print;
+	pthread_mutex_t	mutex_eat;
+	pthread_mutex_t	mutex_cmp_finish;
+}			t_resource;
 
 //utils.c
 void	ft_putstr_fd(char *s, int fd);
@@ -60,13 +71,30 @@ void	ft_putnbr_fd(int n, int fd);
 int		ft_isdigit(int c);
 int		ft_atoi(const char *str);
 
-//philo_func.c
-void	ft_take_forks(t_philo *philo);
-void	ft_drop_forks(t_philo *philo);
-void	ft_eat(t_philo *philo);
-void	ft_sleep(t_philo *philo);
-void	ft_think(t_philo *philo);
+//routine.c
+void	*routine(void *args);
 
-int get_time(void);
-void print_status(t_philo *philo, char *str);
+//check.c
+int		check_finish(t_philo *philo, int status);
+int		checker(t_resource *resource);
+
+//free.c
+int		free_resource(t_resource *resource);
+
+//handle_thread.c
+int		create_and_run_philos(t_resource *resource);
+
+//preprocess.c
+int		preprocessing(int argc, char **argv, t_resource *resource);
+
+//print_msg.c
+void	print_status(t_philo *philo, char *str);
+int		print_error(char *str);
+
+//time.c
+int		get_time(void);
+
+//validate.c
+int		validate_input(char **argv);
+
 #endif
