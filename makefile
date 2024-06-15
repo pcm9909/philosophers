@@ -6,7 +6,7 @@
 #    By: chunpark <chunpark@student.42gyeongsan.    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/14 17:13:16 by chunpark          #+#    #+#              #
-#    Updated: 2024/06/15 21:07:02 by chunpark         ###   ########.fr        #
+#    Updated: 2024/06/15 21:42:12 by chunpark         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -41,9 +41,9 @@ $(NAME): $(OBJS)
 		   @echo "           Done compiling...! "
 		   @echo ""
 		   @echo ""
-		   @echo "          ./philo [number_of_philos] [time_to_die] [time_to_eat] [time_to_sleep] [number_of_must_eat]"
-		   @echo "                                                                                  \033[0;31m~~~~~~~~~~~~~~~~~~\033[0m"
-		   @echo "                                                                                       \033[0;32mnot must\033[0m"
+		   @echo "              ./philo [number_of_philos] [time_to_die] [time_to_eat] [time_to_sleep] [number_of_must_eat]"
+		   @echo "                                                                                      \033[0;31m~~~~~~~~~~~~~~~~~~\033[0m"
+		   @echo "                                                                                           \033[0;32mnot must\033[0m"
 		   @echo ""
 
 
